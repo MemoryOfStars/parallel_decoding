@@ -330,16 +330,23 @@ void* decode_thread(void* params)
 int main(int argc, char* argv[])
 {
 
+	pthread_t decode_tid[GROUP_ITEM_COUNT*TOTAL_GROUP];
 	avcodec_register_all();
 	av_register_all();
 	avformat_network_init();
+
 	
 	if(decode_group_init("./videos") != 0)                    //读videos文件夹下的所有视频文件
 	{
 		printf("decode_group_init failed!!!!!!!!!!!\n");
 	}
+	int decode_id[GROUP_ITEM_COUNT*TOTAL_GROUP];
+	for(int i = 0;i < GROUP_ITEM_COUNT*TOTAL_GROUP;i++)       //创建所有的解码线程
+	{
+		decode_id[i] = i;
+		pthread_create(&decode_tid[i], 0, decodeThread, (void*)&decode_id[i]));
+	}
 	
-	decodeThread();
 
 	while (1)
 	{
